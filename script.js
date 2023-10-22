@@ -13,6 +13,11 @@ function search(str) {
 
 function searchHandler(e) {
 	const val = e.target.value
+	if (!val) {
+		suggestions.innerHTML = '';
+		suggestions.classList.remove('has-suggestions')
+		return;
+	}
 	// console.log(val);
 	const results = search(val);
 	showSuggestions(results, val)
@@ -20,14 +25,15 @@ function searchHandler(e) {
 
 function showSuggestions(results, inputVal) {
 	for (let i = 0; i < results.length; i++) {
-		if (!inputVal) {
-			suggestions.innerHTML = '';
-			suggestions.classList.remove('has-suggestions')
-			return;
-		}
 		suggestions.classList.add('has-suggestions')
 		const newLi = document.createElement('li')
-		newLi.innerHTML = results[i].replace(inputVal, "<strong>" + inputVal + "</strong>");
+		//bolds substring, regardless of case
+		let inputLower = inputVal.toLowerCase();
+		let elLower = results[i].toLowerCase();
+		const idx = elLower.indexOf(inputLower);
+		let substring = results[i].slice(idx, inputVal.length + idx);
+		newLi.innerHTML = results[i].replace(substring, "<strong>" + substring + "</strong>");
+
 		suggestions.append(newLi);
 	}
 }
@@ -36,7 +42,6 @@ function useSuggestion(e) {
 	const clickedLi = e.target
 	input.value = clickedLi.innerText;
 	suggestions.classList.remove('has-suggestions')
-	search(input.value)
 }
 
 input.addEventListener('keyup', searchHandler);
